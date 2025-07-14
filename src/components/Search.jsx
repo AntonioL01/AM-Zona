@@ -9,7 +9,7 @@ import {
 import { Separator } from './ui/separator';
 import { IoSearch } from "react-icons/io5";
 import { Link } from 'react-router-dom';
-import Data from '@/Shared/Data';
+import Data from '@/shared/Data';
 
 function Search() {
   const [cars, setCars] = useState();
