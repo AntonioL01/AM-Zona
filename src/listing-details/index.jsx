@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { db } from "../../configs";
-import { CarListing, CarImages } from "../../configs/schema";
-import { eq } from "drizzle-orm";
 
 import { useUser } from "@clerk/clerk-react";
 import Service from "../shared/Service";
@@ -32,14 +29,11 @@ function ListingDetails() {
 
   const fetchCarDetail = async () => {
     try {
-      const result = await db
-        .select()
-        .from(CarListing)
-        .innerJoin(CarImages, eq(CarListing.id, CarImages.carListingId))
-        .where(eq(CarListing.id, Number(id)));
-
-      const formatted = Service.FormatResult(result);
-      setCarDetail(formatted[0]);
+      const res = await fetch("/.netlify/functions/get-listings");
+      const data = await res.json();
+      const formatted = Service.FormatResult(data);
+      const listing = formatted.find(item => item.id === Number(id));
+      setCarDetail(listing);
     } catch (err) {
       console.error("Greška prilikom dohvaćanja detalja vozila:", err);
     }

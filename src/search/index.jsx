@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { db } from '../../configs';
-import { CarListing, CarImages } from '../../configs/schema';
-import { and, eq, lte } from 'drizzle-orm';
 import Service from '@/shared/Service';
 import Header from '@/components/Header';
 import Search from '@/components/Search';
@@ -23,29 +20,16 @@ function SearchByOptions() {
 
   const GetCarList = async () => {
     try {
-      const whereConditions = [];
-
-      if (condition) {
-        whereConditions.push(eq(CarListing.condition, condition));
-      }
-
-      if (make) {
-        whereConditions.push(eq(CarListing.make, make));
-      }
-
-      if (price) {
-        const parsedPrice = Number(price);
-        if (!isNaN(parsedPrice)) {
-          whereConditions.push(lte(CarListing.price, parsedPrice));
-        }
-      }
-
-      const result = await db
-        .select()
-        .from(CarListing)
-        .innerJoin(CarImages, eq(CarListing.id, CarImages.carListingId))
-        .where(whereConditions.length ? and(...whereConditions) : undefined);
-
+      const res = await fetch('/.netlify/functions/search-listings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          condition,
+          make,
+          price: price ? Number(price) : null
+        })
+      });
+      const result = await res.json();
       const formatted = Service.FormatResult(result);
       setCarList(formatted);
     } catch (err) {

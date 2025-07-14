@@ -8,9 +8,6 @@ import {
 } from "@/components/ui/carousel";
 
 import CarItem from './CarItem';
-import { db } from "../../configs/db";
-import { CarImages, CarListing } from "../../configs/schema";
-import { desc, eq } from 'drizzle-orm';
 import Service from '@/shared/Service';
 
 const MostSearched = () => {
@@ -22,13 +19,8 @@ const MostSearched = () => {
 
   const GetPopularCarList = async () => {
     try {
-      const result = await db
-        .select()
-        .from(CarListing)
-        .leftJoin(CarImages, eq(CarListing.id, CarImages.carListingId))
-        .orderBy(desc(CarListing.id))
-        .limit(10);
-
+      const response = await fetch(`/.netlify/functions/get-most-searched`);
+      const result = await response.json();
       const formatted = Service.FormatResult(result);
       setCarList(formatted);
     } catch (error) {

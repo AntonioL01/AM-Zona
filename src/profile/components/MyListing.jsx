@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUser } from '@clerk/clerk-react';
-import { db } from './../../../configs';
-import { CarImages, CarListing } from './../../../configs/schema';
-import { desc, eq } from 'drizzle-orm';
 import Service from '@/shared/Service';
 import CarItem from '@/components/CarItem';
 import { Button } from '@/components/ui/button';
@@ -15,25 +12,33 @@ function MyListing() {
   const [carList, setCarList] = useState([]);
 
   useEffect(() => {
-    user && GetUserCarListing();
+    if (user) {
+      GetUserCarListing();
+    }
   }, [user]);
 
   const GetUserCarListing = async () => {
-    const result = await db
-      .select()
-      .from(CarListing)
-      .leftJoin(CarImages, eq(CarListing.id, CarImages.carListingId))
-      .where(eq(CarListing.createdBy, user?.id))
-      .orderBy(desc(CarListing.id));
-
-    const resp = Service.FormatResult(result);
-    setCarList(resp);
+    try {
+      const res = await fetch('/.netlify/functions/get-user-listings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id })
+      });
+      const data = await res.json();
+      const resp = Service.FormatResult(data);
+      setCarList(resp);
+    } catch (err) {
+      console.error("Greška prilikom dohvaćanja oglasa:", err);
+    }
   };
 
   const deleteListing = async (listingId) => {
     try {
-      await db.delete(CarImages).where(eq(CarImages.carListingId, listingId));
-      await db.delete(CarListing).where(eq(CarListing.id, listingId));
+      await fetch('/.netlify/functions/delete-listing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ listingId })
+      });
       setCarList(prev => prev.filter(car => car.id !== listingId));
       toast.success("Oglas uspješno obrisan.");
     } catch (e) {
@@ -53,7 +58,6 @@ function MyListing() {
         </Link>
       </div>
 
-      {/* Separator */}
       <div className="border-b border-zinc-400 mb-6"></div>
 
       {carList.length === 0 ? (

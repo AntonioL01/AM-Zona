@@ -2,9 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { IoMdCloseCircle } from 'react-icons/io';
 import { supabase } from '../../../configs/supabaseClient';
-import { db } from '../../../configs';
-import { CarImages } from '../../../configs/schema';
-import { eq } from 'drizzle-orm';
 
 function UploadImages({ triggleUploadImages, setLoader, carInfo, mode }) {
   const [selectedFileList, setSelectedFileList] = useState([]);
@@ -31,7 +28,6 @@ function UploadImages({ triggleUploadImages, setLoader, carInfo, mode }) {
       const file = files[i];
       setSelectedFileList((prev) => [...prev, file]);
     }
-    console.log('Odabrani fajlovi za upload:', files);
   };
 
   const onImageRemove = (image) => {
@@ -40,24 +36,29 @@ function UploadImages({ triggleUploadImages, setLoader, carInfo, mode }) {
   };
 
   const onImageRemoveFromDB = async (image, index) => {
-    await db.delete(CarImages).where(eq(CarImages.id, carInfo?.images[index]?.id));
-    const imageList = editCarImageList.filter((item) => item !== image);
-    setEditCarImageList(imageList);
+    try {
+      await fetch(`/.netlify/functions/delete-car-image`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageId: carInfo?.images[index]?.id })
+      });
+      const imageList = editCarImageList.filter((item) => item !== image);
+      setEditCarImageList(imageList);
+    } catch (err) {
+      console.error('Greška kod brisanja slike iz baze:', err);
+    }
   };
 
   const UploadImageToServer = async () => {
-    console.log('Pokrećem upload slika...');
     setLoader(true);
 
     if (selectedFileList.length === 0) {
-      console.warn('Nema slika za upload.');
       setLoader(false);
       return;
     }
 
     for (const file of selectedFileList) {
       const fileName = `${Date.now()}-${file.name}`;
-      console.log('Uploading:', fileName);
 
       const { data: uploadData, error: uploadError } = await supabase
         .storage
@@ -69,8 +70,6 @@ function UploadImages({ triggleUploadImages, setLoader, carInfo, mode }) {
         continue;
       }
 
-      console.log('Upload uspješan:', uploadData);
-
       const { data: publicUrlData } = supabase
         .storage
         .from('images')
@@ -79,21 +78,22 @@ function UploadImages({ triggleUploadImages, setLoader, carInfo, mode }) {
       const downloadUrl = publicUrlData?.publicUrl;
 
       if (downloadUrl && triggleUploadImages) {
-        console.log('Dohvaćen public URL:', downloadUrl);
-
-        await db.insert(CarImages).values({
-          imageUrl: downloadUrl,
-          carListingId: triggleUploadImages,
-        });
-
-        console.log('URL spremljen u bazu.');
-      } else {
-        console.warn('Nije moguće spremiti u bazu – nedostaje URL ili listingId.');
+        try {
+          await fetch(`/.netlify/functions/save-car-image`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              imageUrl: downloadUrl,
+              carListingId: triggleUploadImages
+            })
+          });
+        } catch (err) {
+          console.error('Greška kod spremanja slike u bazu:', err);
+        }
       }
     }
 
     setLoader(false);
-    console.log('Upload slika završen.');
   };
 
   return (
