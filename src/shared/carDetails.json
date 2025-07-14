@@ -1,0 +1,174 @@
+{
+  "carDetails": [
+    {
+      "label": "Naslov oglasa",
+      "name": "listingTitle",
+      "fieldType": "text",
+      "required": true,
+      "column": 2,
+      "icon": "FaClipboardList",
+      "placeholder": "Unesite naslov oglasa"
+    },
+    {
+      "label": "Cijena (€)",
+      "name": "price",
+      "fieldType": "text",
+      "required": true,
+      "column": 1,
+      "icon": "FaMoneyBillAlt",
+      "placeholder": "Unesite cijenu"
+    },
+    {
+      "label": "Kategorija",
+      "name": "category",
+      "fieldType": "dropdown",
+      "options": ["Limuzina", "SUV", "Kabriolet", "Coupe", "Električni", "Hibrid", "Motocikl", "Kombi", "Kamion", "Plovila"],
+      "required": true,
+      "column": 1,
+      "icon": "FaCar",
+      "placeholder": "Odaberite kategoriju"
+    },
+    {
+      "label": "Stanje vozila",
+      "name": "condition",
+      "fieldType": "dropdown",
+      "required": true,
+      "options": ["Novo", "Rabljeno", "Karambolirano"],
+      "column": 1,
+      "icon": "FaCheckCircle",
+      "placeholder": "Odaberite stanje vozila"
+    },
+    {
+      "label": "Marka",
+      "name": "make",
+      "fieldType": "dropdown",
+      "required": true,
+      "options": ["Abarth", "Alfa Romeo", "Aston Martin", "Audi", "Bentley", "BMW", "Cadillac", "Chevrolet", "Chrysler", "Citroën", "Cupra", "Dacia", "Daewoo", "Daihatsu", "Dodge", "Dongfeng", "DFSK", "DS Automobiles", "Electa", "Ferrari", "Fiat", "Ford", "Forthing", "Geely", "GMC", "Honda", "Hummer", "Hyundai", "Infiniti", "Isuzu", "Iveco", "Jaguar", "Jeep", "Kia", "Lada", "Lamborghini", "Lancia", "Land Rover", "Lexus", "Lincoln", "Lynk & Co", "Maserati", "Mazda", "McLaren", "Mercedes-Benz", "MG", "MINI", "Mitsubishi", "Nissan", "Opel", "Peugeot", "Polestar", "Pontiac", "Porsche", "Puch", "Renault", "Rolls-Royce", "Rover", "Saab", "Seat", "Smart", "Ssang Yong", "Subaru", "Suzuki", "Škoda", "Tesla", "Toyota", "Trabant", "Volvo", "VW", "Wartburg", "XEV", "Zastava"],
+      "column": 1,
+      "icon": "FaIndustry",
+      "placeholder": "Odaberite marku"
+    },
+    {
+      "label": "Model",
+      "name": "model",
+      "fieldType": "text",
+      "required": true,
+      "column": 1,
+      "icon": "FaCarSide",
+      "placeholder": "Unesite model vozila"
+    },
+    {
+      "label": "Godina proizvodnje",
+      "name": "year",
+      "fieldType": "number",
+      "required": true,
+      "column": 1,
+      "icon": "FaCalendarAlt",
+      "placeholder": "Unesite godinu proizvodnje"
+    },
+    {
+      "label": "Pogon",
+      "name": "driveType",
+      "fieldType": "dropdown",
+      "options": ["Prednji pogon (FWD)", "Stražnji pogon (RWD)", "Pogon na sve kotače (AWD)", "4x4"],
+      "required": true,
+      "column": 1,
+      "icon": "FaRoad",
+      "placeholder": "Odaberite pogon"
+    },
+    {
+      "label": "Mjenjač",
+      "name": "transmission",
+      "fieldType": "dropdown",
+      "options": ["Automatski", "Ručni", "CVT"],
+      "required": true,
+      "column": 1,
+      "icon": "FaCogs",
+      "placeholder": "Odaberite mjenjač"
+    },
+    {
+      "label": "Vrsta goriva",
+      "name": "fuelType",
+      "fieldType": "dropdown",
+      "options": ["Benzin", "Dizel", "Električni", "Hibrid"],
+      "required": true,
+      "column": 1,
+      "icon": "FaGasPump",
+      "placeholder": "Odaberite vrstu goriva"
+    },
+    {
+      "label": "Kilometraža",
+      "name": "mileage",
+      "fieldType": "number",
+      "required": true,
+      "column": 1,
+      "icon": "FaTachometerAlt",
+      "placeholder": "Unesite kilometražu"
+    },
+    {
+      "label": "Veličina motora (npr. 1.9 TDI)",
+      "name": "engineSize",
+      "fieldType": "text",
+      "required": true,
+      "column": 1,
+      "icon": "FaWrench",
+      "placeholder": "Unesite veličinu motora"
+    },
+    {
+      "label": "Snaga motora (kW)",
+  "name": "power",
+  "fieldType": "number",
+  "required": true,
+  "column": 1,
+  "icon": "ImPower",
+  "placeholder": "Unesite snagu motora"
+    },
+    {
+      "label": "Boja",
+      "name": "color",
+      "fieldType": "dropdown",
+      "required": true,
+      "options": ["Crna", "Bijela", "Srebrna", "Siva", "Plava", "Crvena", "Zelena", "Zlatna", "Bež", "Narančasta", "Žuta", "Roza", "Ljubičasta", "Smeđa", "Tirkizna"],
+      "column": 2,
+      "icon": "FaPalette",
+      "placeholder": "Odaberite boju"
+    },
+    {
+      "label": "Broj vrata",
+      "name": "door",
+      "fieldType": "number",
+      "required": true,
+      "column": 1,
+      "icon": "FaDoorClosed",
+      "placeholder": "Unesite broj vrata"
+    },
+    {
+      "label": "VIN broj (broj šasije)",
+      "name": "vin",
+      "fieldType": "text",
+      "required": true,
+      "column": 1,
+      "icon": "MdConfirmationNumber",
+      "placeholder": "Unesite VIN broj"
+    },
+    {
+      "label": "Vrsta ponude",
+      "name": "offerType",
+      "fieldType": "dropdown",
+      "required": true,
+      "options": ["Kupnja", "Prodaja", "Hitno"],
+      "column": 2,
+      "icon": "FaTags",
+      "placeholder": "Odaberite vrstu ponude"
+    },
+    {
+      "label": "Opis oglasa",
+      "name": "listingDescription",
+      "fieldType": "textarea",
+      "required": true,
+      "column": 2,
+      "icon": "FaFileAlt",
+      "placeholder": "Unesite opis oglasa"
+    }
+  ]
+}

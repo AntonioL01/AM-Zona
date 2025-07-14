@@ -1,0 +1,45 @@
+{
+  "features": [
+    { "label": "Klima uređaj", "name": "klimaUredaj", "fieldType": "checkbox" },
+    { "label": "Automatska klima", "name": "automatskaKlima", "fieldType": "checkbox" },
+    { "label": "Grijana sjedala", "name": "grijanaSjedala", "fieldType": "checkbox" },
+    { "label": "Električno podešavanje sjedala", "name": "elektricnoPodesavanjeSjedala", "fieldType": "checkbox" },
+    { "label": "Grijana ogledala", "name": "grijanaOgledala", "fieldType": "checkbox" },
+    { "label": "Servo upravljač", "name": "servoUpravljac", "fieldType": "checkbox" },
+    { "label": "Multifunkcijski volan", "name": "multifunkcijskiVolan", "fieldType": "checkbox" },
+    { "label": "Tempomat", "name": "tempomat", "fieldType": "checkbox" },
+    { "label": "Električni prozori", "name": "elektricniProzori", "fieldType": "checkbox" },
+    { "label": "Panoramski krov", "name": "panoramskiKrov", "fieldType": "checkbox" },
+
+    { "label": "Bluetooth", "name": "bluetooth", "fieldType": "checkbox" },
+    { "label": "Android Auto", "name": "androidAuto", "fieldType": "checkbox" },
+    { "label": "Navigacija (GPS)", "name": "navigacija", "fieldType": "checkbox" },
+    { "label": "USB priključak", "name": "usbPrikljucak", "fieldType": "checkbox" },
+    { "label": "Zaslon na dodir", "name": "zaslonNaDodir", "fieldType": "checkbox" },
+
+    { "label": "ABS (Protublokirajući sustav kočenja)", "name": "abs", "fieldType": "checkbox" },
+    { "label": "Pomoć pri kočenju", "name": "pomocPriKocenju", "fieldType": "checkbox" },
+    { "label": "Kontrola stabilnosti", "name": "kontrolaStabilnosti", "fieldType": "checkbox" },
+    { "label": "Kontrola proklizavanja", "name": "kontrolaProklizavanja", "fieldType": "checkbox" },
+    { "label": "Isofix sustav za dječja sjedala", "name": "isofix", "fieldType": "checkbox" },
+    { "label": "Zračni jastuk za vozača", "name": "zracniJastukVozac", "fieldType": "checkbox" },
+    { "label": "Zračni jastuk za suvozača", "name": "zracniJastukSuvozac", "fieldType": "checkbox" },
+    { "label": "Bočni zračni jastuci", "name": "bocniZracniJastuci", "fieldType": "checkbox" },
+    { "label": "Sigurnosne brave za djecu", "name": "sigurnosneBraveZaDjecu", "fieldType": "checkbox" },
+    { "label": "Središnje zaključavanje", "name": "sredisnjeZakljucavanje", "fieldType": "checkbox" },
+    { "label": "Alarm", "name": "alarm", "fieldType": "checkbox" },
+    { "label": "Imobilizator", "name": "imobilizator", "fieldType": "checkbox" },
+
+    { "label": "Prednja maglenka", "name": "prednjaMaglenka", "fieldType": "checkbox" },
+    { "label": "Senzor za kišu", "name": "senzorKise", "fieldType": "checkbox" },
+    { "label": "Stražnji spojler", "name": "straznjiSpojler", "fieldType": "checkbox" },
+    { "label": "Aluminijski naplatci", "name": "aluminijskiNaplatci", "fieldType": "checkbox" },
+    { "label": "Krovni nosač", "name": "krovniNosac", "fieldType": "checkbox" },
+    { "label": "Prednji parkirni senzori", "name": "prednjiParkirniSenzori", "fieldType": "checkbox" },
+    { "label": "Stražnji parkirni senzori", "name": "stražnjiParkirniSenzori", "fieldType": "checkbox" },
+    { "label": "Prednja kamera", "name": "prednjaKamera", "fieldType": "checkbox" },
+    { "label": "Kamera za vožnju unatrag", "name": "kameraZaVoznjuUnatrag", "fieldType": "checkbox" },
+    { "label": "Rezervna guma", "name": "rezervnaGuma", "fieldType": "checkbox" },
+    { "label": "Auto kuka", "name": "autoKuka", "fieldType": "checkbox" }
+  ]
+}
