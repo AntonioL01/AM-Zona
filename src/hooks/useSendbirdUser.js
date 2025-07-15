@@ -11,9 +11,15 @@ function useSendbirdUser() {
     if (!user || !user.id) return;
 
     const registerUser = async () => {
-      const userId = user.id; 
+      const userId = user.id;
       const nickname = user.fullName || user.username || "Korisnik";
       const profileUrl = user.imageUrl || "";
+
+      console.log("👉 Sendbird payload koji šaljem:", {
+        user_id: userId,
+        nickname: nickname || "Korisnik",
+        profile_url: profileUrl || ""
+      });
 
       try {
         const response = await fetch(SENDBIRD_API_URL, {
@@ -24,8 +30,8 @@ function useSendbirdUser() {
           },
           body: JSON.stringify({
             user_id: userId,
-            nickname,
-            profile_url: profileUrl,
+            nickname: nickname || "Korisnik",       
+            profile_url: profileUrl || "",          
           }),
         });
 
