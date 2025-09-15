@@ -1,15 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { db } from "../../configs";
-import { CarListing, CarImages } from "../../configs/schema";
-import { eq } from "drizzle-orm";
-
-import { useUser } from "@clerk/clerk-react";
 import Service from "../shared/Service";
 import Header from "../components/Header";
 import InfoSection from "../components/InfoSection";
 import { Separator } from "../components/ui/separator";
-
 import DetailHeader from "./components/DetailHeader";
 import ImageGallery from "./components/ImageGallery";
 import Description from "./components/Description";
@@ -22,7 +16,6 @@ import LoanCalculator from "./components/LoanCalculator";
 function ListingDetails() {
   const { id } = useParams();
   const [carDetail, setCarDetail] = useState(null);
-  const { user } = useUser();
 
   useEffect(() => {
     if (id) {
@@ -32,14 +25,20 @@ function ListingDetails() {
 
   const fetchCarDetail = async () => {
     try {
-      const result = await db
-        .select()
-        .from(CarListing)
-        .innerJoin(CarImages, eq(CarListing.id, CarImages.carListingId))
-        .where(eq(CarListing.id, Number(id)));
+      const response = await fetch(`/api/manage-listing?id=${id}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      const result = await response.json();
 
-      const formatted = Service.FormatResult(result);
-      setCarDetail(formatted[0]);
+      if (response.ok && result) {
+        const formatted = Service.FormatResult([result]);
+        if (formatted.length > 0) {
+          setCarDetail(formatted[0]);
+        }
+      } else {
+        console.error("Greška prilikom dohvaćanja detalja:", result.error);
+      }
     } catch (err) {
       console.error("Greška prilikom dohvaćanja detalja vozila:", err);
     }

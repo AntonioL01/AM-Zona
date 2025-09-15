@@ -23,13 +23,12 @@ import { MdLocalOffer } from "react-icons/md";
 
 import data from "@/shared/carDetails.json";
 
-// Ukloni listingTitle i listingDescription
 const specs = data.carDetails
   .filter(
     (item) =>
       item.name !== "listingDescription" && item.name !== "listingTitle"
   )
-  .slice(0, 16); // maksimalno 16 stavki (8 redova po 2)
+  .slice(0, 16); 
 
 const customIcons = {
   vin: AiOutlineFieldNumber,

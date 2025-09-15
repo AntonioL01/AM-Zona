@@ -2,7 +2,7 @@ import React from 'react';
 
 function CarSpecification({ carDetail }) {
   const renderSpec = (label, value) => {
-    if (!value || value === 'N/A') return null; // Sakrij ako je prazno ili N/A
+    if (!value || value === 'N/A') return null; 
     return (
       <div className="flex justify-between border-b py-1">
         <span className="text-gray-600">{label}:</span>

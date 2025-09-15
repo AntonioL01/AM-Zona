@@ -3,16 +3,34 @@ import React, { useState } from "react";
 function LoanCalculator() {
   const [amount, setAmount] = useState("");
   const [interest, setInterest] = useState("");
-  const [months, setMonths] = useState(""); 
+  const [months, setMonths] = useState("");
   const [monthly, setMonthly] = useState(null);
   const [total, setTotal] = useState(null);
+  const [error, setError] = useState("");
 
   const calculate = () => {
+    setError("");
+    setMonthly(null);
+    setTotal(null);
+
+    if (!amount || !interest || !months) {
+      setError("Molimo unesite sve podatke.");
+      return;
+    }
+
     const principal = parseFloat(amount);
     const rate = parseFloat(interest) / 100 / 12;
     const numPayments = parseFloat(months);
 
-    if (!principal || !rate || !numPayments) return;
+    if (isNaN(principal) || isNaN(rate) || isNaN(numPayments) || principal <= 0 || numPayments <= 0) {
+      setError("Molimo unesite ispravne pozitivne brojeve za iznos kredita i broj mjeseci.");
+      return;
+    }
+
+    if (rate < 0) {
+      setError("Kamatna stopa ne može biti negativna.");
+      return;
+    }
 
     const payment = (principal * rate) / (1 - Math.pow(1 + rate, -numPayments));
     const totalPaid = payment * numPayments;
@@ -46,6 +64,13 @@ function LoanCalculator() {
           value={months}
           onChange={(e) => setMonths(e.target.value)}
         />
+        
+        {error && (
+          <div className="text-red-500 font-medium text-sm mt-1">
+            {error}
+          </div>
+        )}
+
         <button
           onClick={calculate}
           className="bg-neutral-700 text-white py-2 rounded hover:bg-neutral-800"

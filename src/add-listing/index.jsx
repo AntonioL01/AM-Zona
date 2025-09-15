@@ -7,20 +7,17 @@ import TextAreaField from './components/TextAreaField';
 import { Separator } from '@/components/ui/separator';
 import features from '../shared/features.json';
 import { Button } from '@/components/ui/button';
-import { db } from '../../configs/db';
-import { CarImages, CarListing } from '../../configs/schema';
 import IconField from './components/IconField';
 import UploadImages from './components/UploadImages';
 import { toast } from 'sonner';
 import { useUser } from '@clerk/clerk-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import moment from 'moment';
-import { eq } from 'drizzle-orm';
 import Service from '@/shared/Service';
 import SellerFormSection from './components/SellerFormSection';
 
 function AddListing() {
-  const { user } = useUser();
+  const { user, isSignedIn, isLoaded } = useUser();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -53,6 +50,12 @@ function AddListing() {
     if (selectedCategory === "Kamion") return allowedFieldsByCategory.Kamion.includes(item.name);
     return true;
   });
+  
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      navigate('/sign-in');
+    }
+  }, [isLoaded, isSignedIn, navigate]);
 
   useEffect(() => {
     if (mode === 'edit' && recordId) {
@@ -79,16 +82,18 @@ function AddListing() {
 
   const GetListingDetail = async () => {
     try {
-      const result = await db
-        .select()
-        .from(CarListing)
-        .leftJoin(CarImages, eq(CarListing.id, CarImages.carListingId))
-        .where(eq(CarListing.id, Number(recordId)));
+      const response = await fetch(`/api/manage-listing?id=${recordId}`, {
+        method: 'GET',
+      });
+      const result = await response.json();
 
-      const resp = Service.FormatResult(result);
-      const car = resp[0];
-      setCarInfo(car);
-      setFeaturesData(car.features || {});
+      if (response.ok) {
+        const car = Service.FormatResult([result])[0];
+        setCarInfo(car);
+        setFeaturesData(car.features || {});
+      } else {
+        toast.error("Greška pri dohvaćanju oglasa.");
+      }
     } catch (e) {
       toast.error("Greška pri dohvaćanju oglasa.");
       console.error(e);
@@ -134,21 +139,31 @@ function AddListing() {
     };
 
     try {
+      let response;
       if (mode === 'edit') {
-        await db
-          .update(CarListing)
-          .set(safeData)
-          .where(eq(CarListing.id, Number(recordId)))
-          .returning({ id: CarListing.id });
-
-        toast.success('Oglas ažuriran.');
-        navigate('/profile');
+        response = await fetch(`/api/manage-listing`, {
+          method: 'PUT',
+          body: JSON.stringify({ id: Number(recordId), ...safeData }),
+        });
       } else {
-        const result = await db.insert(CarListing).values(safeData).returning({ id: CarListing.id });
-        if (result?.[0]?.id) {
-          setNewListingId(result[0].id);
-          toast.success('Oglas uspješno spremljen. Učitavanje slika...');
+        response = await fetch(`/api/manage-listing`, {
+          method: 'POST',
+          body: JSON.stringify(safeData),
+        });
+      }
+
+      const result = await response.json();
+
+      if (response.ok) {
+        if (mode === 'edit') {
+          toast.success(result.message);
+          navigate('/profile');
+        } else {
+          setNewListingId(result.id);
+          toast.success(result.message + ' Učitavanje slika...');
         }
+      } else {
+        toast.error(result.error || 'Greška prilikom spremanja oglasa.');
       }
     } catch (e) {
       console.error('Error:', e);
@@ -157,6 +172,14 @@ function AddListing() {
 
     setIsUploading(false);
   };
+
+  if (!isLoaded) {
+    return <div>Loading...</div>;
+  }
+  
+  if (!isSignedIn) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-zinc-300 text-zinc-900">

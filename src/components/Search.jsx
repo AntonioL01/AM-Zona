@@ -12,23 +12,56 @@ import { Link } from 'react-router-dom';
 import Data from '@/shared/Data';
 
 function Search() {
-  const [cars, setCars] = useState();
-  const [make, setMake] = useState();
-  const [price, setPrice] = useState();
+  const [category, setCategory] = useState('');
+  const [make, setMake] = useState('');
+  const [price, setPrice] = useState('');
+  const [condition, setCondition] = useState('');
+
+  const vehicleCategories = [
+    "Limuzina",
+    "SUV",
+    "Kabriolet",
+    "Coupe",
+    "Električni",
+    "Hibrid",
+    "Motocikl",
+    "Kombi",
+    "Kamion",
+    "Plovila"
+  ];
+
+  const vehicleConditions = [
+    "Novo",
+    "Rabljeno",
+    "Karambolirano"
+  ];
 
   return (
-    <div className="p-3 md:p-5 bg-white text-black rounded-md md:rounded-full 
+    <div className="p-3 md:p-5 bg-white text-black rounded-md md:rounded-full
     flex flex-col md:flex-row items-center w-full md:w-[60%] shadow-md gap-4 md:gap-6">
 
-      <div className="flex flex-1 items-center gap-4">
-        <Select onValueChange={(value) => setCars(value)}>
+      <div className="flex flex-1 flex-col md:flex-row items-center gap-4 w-full">
+        <Select onValueChange={(value) => setCategory(value)}>
           <SelectTrigger className="flex-1 text-black bg-white outline-none border-none shadow-none text-lg">
             <SelectValue placeholder="Vrsta vozila" />
           </SelectTrigger>
           <SelectContent className="text-black bg-white">
-            <SelectItem value="Novo">Novo</SelectItem>
-            <SelectItem value="Rabljeno">Rabljeno</SelectItem>
-            <SelectItem value="Karambolirano">Karambolirano</SelectItem>
+            {vehicleCategories.map((item, index) => (
+              <SelectItem key={index} value={item}>{item}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Separator orientation="vertical" className="hidden md:block h-8" />
+
+        <Select onValueChange={(value) => setCondition(value)}>
+          <SelectTrigger className="flex-1 text-black bg-white outline-none border-none shadow-none text-lg">
+            <SelectValue placeholder="Stanje" />
+          </SelectTrigger>
+          <SelectContent className="text-black bg-white">
+            {vehicleConditions.map((item, index) => (
+              <SelectItem key={index} value={item}>{item}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
 
@@ -60,7 +93,7 @@ function Search() {
       </div>
 
       <Link
-        to={`/search?cars=${cars || ''}&make=${make || ''}&price=${price || ''}`}
+        to={`/search?category=${category}&condition=${condition}&make=${make}&price=${price}`}
         className="flex items-center justify-center p-3 rounded-full bg-blue-800 hover:scale-105 transition"
       >
         <IoSearch className="text-2xl text-white" />

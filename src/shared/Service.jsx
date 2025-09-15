@@ -1,11 +1,16 @@
 import axios from "axios";
 
-const SendBirdApplicationId = import.meta.env.VITE_SENDBIRD_APP_ID;
-const SendBirdApiToken = import.meta.env.VITE_SENDBIRD_API_TOKEN;
+const SENDBIRD_API_BASE_URL = import.meta.env.VITE_SENDBIRD_API_URL; 
+const SENDBIRD_API_TOKEN = import.meta.env.VITE_SENDBIRD_API_TOKEN;
 
 const FormatResult = (resp) => {
   const result = {};
   const finalResult = [];
+
+  
+  if (!Array.isArray(resp) || resp.length === 0) {
+    return []; 
+  }
 
   resp.forEach((item) => {
     const listing = item.carListing;
@@ -29,7 +34,7 @@ const FormatResult = (resp) => {
     finalResult.push({
       ...item.car,
       images: item.images,
-      image: item.images?.[0]?.imageUrl || null, // koristi se u CarItem
+      image: item.images?.[0]?.imageUrl || null, 
     });
   });
 
@@ -38,17 +43,17 @@ const FormatResult = (resp) => {
 
 const CreateSendBirdUser = (userId, nickName, profileUrl) => {
   return axios.post(
-    `https://api-${SendBirdApplicationId}.sendbird.com/v3/users`,
+    `${SENDBIRD_API_BASE_URL}/users`, 
     {
       user_id: userId,
       nickname: nickName,
-      profile_url: profileUrl,
+      profile_url: profileUrl || undefined, 
       issue_access_token: false,
     },
     {
       headers: {
         "Content-Type": "application/json",
-        "Api-Token": SendBirdApiToken,
+        "Api-Token": SENDBIRD_API_TOKEN,
       },
     }
   );
@@ -56,7 +61,7 @@ const CreateSendBirdUser = (userId, nickName, profileUrl) => {
 
 const CreateSendBirdChannel = (users, title) => {
   return axios.post(
-    `https://api-${SendBirdApplicationId}.sendbird.com/v3/group_channels`,
+    `${SENDBIRD_API_BASE_URL}/group_channels`, 
     {
       user_ids: users,
       is_distinct: true,
@@ -66,7 +71,7 @@ const CreateSendBirdChannel = (users, title) => {
     {
       headers: {
         "Content-Type": "application/json",
-        "Api-Token": SendBirdApiToken,
+        "Api-Token": SENDBIRD_API_TOKEN,
       },
     }
   );

@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { db } from '../../configs';
-import { CarListing, CarImages } from '../../configs/schema';
-import { and, eq, lte } from 'drizzle-orm';
 import Service from '@/shared/Service';
 import Header from '@/components/Header';
 import Search from '@/components/Search';
@@ -13,41 +10,35 @@ function SearchByOptions() {
   const [searchParams] = useSearchParams();
   const [carList, setCarList] = useState([]);
 
-  const condition = searchParams.get('cars');
+  const category = searchParams.get('category');
+  const condition = searchParams.get('condition');
   const make = searchParams.get('make');
   const price = searchParams.get('price');
 
   useEffect(() => {
     GetCarList();
-  }, [condition, make, price]);
+  }, [category, condition, make, price]);
 
   const GetCarList = async () => {
     try {
-      const whereConditions = [];
+      const params = new URLSearchParams();
+      if (category) params.append('category', category);
+      if (condition) params.append('condition', condition);
+      if (make) params.append('make', make);
+      if (price) params.append('price', price);
 
-      if (condition) {
-        whereConditions.push(eq(CarListing.condition, condition));
+      const response = await fetch(`/api/manage-listing?${params.toString()}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      const result = await response.json();
+
+      if (response.ok && Array.isArray(result)) {
+        const formatted = Service.FormatResult(result);
+        setCarList(formatted);
+      } else {
+        console.error('Greška u dohvaćanju podataka:', result.error || result);
       }
-
-      if (make) {
-        whereConditions.push(eq(CarListing.make, make));
-      }
-
-      if (price) {
-        const parsedPrice = Number(price);
-        if (!isNaN(parsedPrice)) {
-          whereConditions.push(lte(CarListing.price, parsedPrice));
-        }
-      }
-
-      const result = await db
-        .select()
-        .from(CarListing)
-        .innerJoin(CarImages, eq(CarListing.id, CarImages.carListingId))
-        .where(whereConditions.length ? and(...whereConditions) : undefined);
-
-      const formatted = Service.FormatResult(result);
-      setCarList(formatted);
     } catch (err) {
       console.error('Greška u dohvaćanju podataka:', err);
     }
@@ -66,10 +57,7 @@ function SearchByOptions() {
         {carList.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {carList.map((item, index) => (
-              <div
-                key={index}
-                className="rounded-xl shadow hover:shadow-lg transition duration-200 bg-white"
-              >
+              <div key={index} className="rounded-xl shadow hover:shadow-lg transition duration-200 bg-white">
                 <CarItem car={item} />
               </div>
             ))}

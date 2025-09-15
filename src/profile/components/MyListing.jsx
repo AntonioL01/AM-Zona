@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUser } from '@clerk/clerk-react';
-import { db } from './../../../configs';
-import { CarImages, CarListing } from './../../../configs/schema';
-import { desc, eq } from 'drizzle-orm';
 import Service from '@/shared/Service';
 import CarItem from '@/components/CarItem';
 import { Button } from '@/components/ui/button';
@@ -11,31 +8,52 @@ import { FaTrashAlt } from "react-icons/fa";
 import { toast } from 'sonner';
 
 function MyListing() {
-  const { user } = useUser();
+  const { user, isSignedIn } = useUser();
   const [carList, setCarList] = useState([]);
 
   useEffect(() => {
-    user && GetUserCarListing();
-  }, [user]);
+    if (isSignedIn && user?.id) {
+      GetUserCarListing();
+    }
+  }, [isSignedIn, user]);
 
   const GetUserCarListing = async () => {
-    const result = await db
-      .select()
-      .from(CarListing)
-      .leftJoin(CarImages, eq(CarListing.id, CarImages.carListingId))
-      .where(eq(CarListing.createdBy, user?.id))
-      .orderBy(desc(CarListing.id));
+    try {
+      const response = await fetch(`/api/manage-listing?userId=${user?.id}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
 
-    const resp = Service.FormatResult(result);
-    setCarList(resp);
+      const result = await response.json();
+
+      if (response.ok && Array.isArray(result)) {
+        const resp = Service.FormatResult(result);
+        setCarList(resp);
+      } else {
+        toast.error("Greška pri dohvaćanju oglasa.");
+      }
+    } catch (e) {
+      console.error("Greška pri dohvaćanju oglasa:", e);
+      toast.error("Greška pri dohvaćanju oglasa.");
+    }
   };
 
   const deleteListing = async (listingId) => {
     try {
-      await db.delete(CarImages).where(eq(CarImages.carListingId, listingId));
-      await db.delete(CarListing).where(eq(CarListing.id, listingId));
-      setCarList(prev => prev.filter(car => car.id !== listingId));
-      toast.success("Oglas uspješno obrisan.");
+      const response = await fetch('/api/manage-listing', {
+        method: 'DELETE',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ listingId })
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setCarList(prev => prev.filter(car => car.id !== listingId));
+        toast.success(result.message || "Oglas uspješno obrisan.");
+      } else {
+        toast.error(result.error || "Brisanje oglasa nije uspjelo.");
+      }
     } catch (e) {
       console.error("Greška pri brisanju oglasa:", e);
       toast.error("Brisanje oglasa nije uspjelo.");
@@ -53,16 +71,15 @@ function MyListing() {
         </Link>
       </div>
 
-      {/* Separator */}
       <div className="border-b border-zinc-400 mb-6"></div>
 
       {carList.length === 0 ? (
         <p className="text-center text-zinc-600">Nemate dodanih oglasa.</p>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-          {carList.map((item, index) => (
+          {carList.map((item) => (
             <div
-              key={index}
+              key={item.id}
               className="bg-zinc-100 rounded-xl shadow-md hover:shadow-lg hover:scale-[1.02] transition-transform duration-200 p-2 border border-zinc-300"
             >
               <CarItem car={item} />

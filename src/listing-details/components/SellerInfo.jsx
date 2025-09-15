@@ -15,7 +15,7 @@ function SellerInfo({ carDetail }) {
 
   return (
     <div className="p-6 rounded-xl border shadow-md mt-7 space-y-4">
-      <h2 className="font-medium text-2xl mb-4">Informacije o prodavaču</h2>
+      <h2 className="font-medium text-2xl mb-4">Informacije o prodavatelju</h2>
       <div className="text-gray-700 space-y-2">
         {county && (
           <p className="flex items-center gap-2">
@@ -42,7 +42,7 @@ function SellerInfo({ carDetail }) {
           onClick={handleMessageClick}
           className="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 rounded-xl mt-4 text-lg shadow-md transition"
         >
-          💬 Pošalji poruku prodavaču
+          💬 Pošalji poruku prodavatelju
         </button>
       )}
     </div>

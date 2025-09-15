@@ -1,75 +1,83 @@
+import { useState, useEffect } from 'react';
+import { useUser, useAuth } from '@clerk/clerk-react';
 import { App as SendbirdApp } from '@sendbird/uikit-react';
 import '@sendbird/uikit-react/dist/index.css';
-import { useUser } from '@clerk/clerk-react';
 import { useSearchParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import SendbirdChat from '@sendbird/chat';
-import { GroupChannelModule } from '@sendbird/chat/groupChannel';
 
-function Inbox() {
-  const { user } = useUser();
+const APP_ID = import.meta.env.VITE_SENDBIRD_APP_ID;
+
+export default function Inbox() {
+  const { isLoaded, user } = useUser();
+  const { getToken } = useAuth();
   const [searchParams] = useSearchParams();
   const recipientId = searchParams.get("recipient");
-  const [channelUrl, setChannelUrl] = useState(null);
-  const [sbInstance, setSbInstance] = useState(null);
+
+  const [sessionToken, setSessionToken] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const initChat = async () => {
-      if (!user || !recipientId || user.id === recipientId) return;
+    if (!isLoaded || !user) return;
 
+    const inicijalizirajSendbird = async () => {
       try {
-        const sb = await SendbirdChat.init({
-          appId: import.meta.env.VITE_SENDBIRD_APP_ID,
-          modules: [new GroupChannelModule()],
+        if (recipientId && recipientId === user.id) {
+          setError("Ne možete poslati poruku samom sebi.");
+          setLoading(false);
+          return;
+        }
+
+        const clerkToken = await getToken({ template: 'sendbird-user' });
+
+        const response = await fetch('/.netlify/functions/sendbird-user', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${clerkToken}`
+          },
+          body: JSON.stringify({
+            userId: user.id,
+            nickname: user.fullName || user.username,
+            profileUrl: user.imageUrl
+          })
         });
 
-        console.log("✅ Pokrećem initChat...");
-        console.log("👤 Prijavljeni korisnik:", user.id);
-        console.log("🎯 Primatelj (recipientId):", recipientId);
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(`Greška servera: ${response.status} - ${errorData.message}`);
+        }
 
-        await sb.connect(user.id);
-        setSbInstance(sb);
-        console.log("🔗 Spajam se na Sendbird kao:", user.id);
+        const data = await response.json();
+        setSessionToken(data.user.session_token);
 
-        const params = {
-          invitedUserIds: [recipientId],
-          isDistinct: true,
-        };
-
-        const channel = await sb.groupChannel.createChannel(params);
-        console.log("✅ Kanal kreiran:", channel.url);
-        setChannelUrl(channel.url);
-      } catch (error) {
-        console.error("❌ Greška pri inicijalizaciji chata:", error);
+      } catch (err) {
+        console.error('Greška pri spajanju na Sendbird:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
     };
 
-    initChat();
+    inicijalizirajSendbird();
+  }, [isLoaded, user, recipientId, getToken]);
 
-    return () => {
-      if (sbInstance?.disconnect) {
-        sbInstance.disconnect();
-      }
-    };
-  }, [user, recipientId]);
-
-  if (!user) return <p className="text-center p-6">Učitavanje korisnika...</p>;
-  if (recipientId && !channelUrl) return <p className="text-center p-6">Otvaranje razgovora...</p>;
+  if (loading) return <p className="text-center p-6">Učitavanje chata...</p>;
+  if (error) return <p className="text-center p-6">Greška: {error}</p>;
+  if (!sessionToken) return <p className="text-center p-6">Pristup chatu nije moguć.</p>;
 
   return (
     <div className="min-h-screen bg-zinc-200 text-zinc-900 px-4 py-6">
       <div className="max-w-6xl mx-auto bg-zinc-100 rounded-xl shadow-md p-4">
         <div style={{ height: '85vh' }}>
           <SendbirdApp
-            appId={import.meta.env.VITE_SENDBIRD_APP_ID}
+            appId={APP_ID}
             userId={user.id}
             nickname={user.fullName || user.username || "Korisnik"}
-            channelUrl={recipientId ? channelUrl : undefined}
+            accessToken={sessionToken}
+            channelUrl={recipientId || undefined}
           />
         </div>
       </div>
     </div>
   );
 }
-
-export default Inbox;

@@ -156,7 +156,7 @@
       "name": "offerType",
       "fieldType": "dropdown",
       "required": true,
-      "options": ["Kupnja", "Prodaja", "Hitno"],
+      "options": ["Kupnja", "Prodaja"],
       "column": 2,
       "icon": "FaTags",
       "placeholder": "Odaberite vrstu ponude"
